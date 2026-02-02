@@ -2,7 +2,7 @@
  * OpenClaw Family Chat Server
  * 
  * WebSocket bridge to OpenClaw Gateway with WebChat interface
- * and integrated music search via YouTube Data API
+ * and integrated music search via ytmusicapi (Python)
  */
 
 import express from 'express';
@@ -10,6 +10,7 @@ import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { spawn } from 'child_process';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -26,8 +27,8 @@ const PORT = process.env.PORT || 3010;
 const GATEWAY_URL = process.env.GATEWAY_WS_URL || 'ws://127.0.0.1:18789';
 const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN || '';
 
-// YouTube API
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || '';
+// Music service path
+const MUSIC_SERVICE_PATH = join(__dirname, 'music_service.py');
 
 // Serve static files
 app.use(express.static(join(__dirname, 'public')));
@@ -179,8 +180,8 @@ function handleClientMessage(msg, ws) {
       break;
       
     case 'music-search':
-      // Search YouTube
-      searchYouTube(msg.query).then(results => {
+      // Search using ytmusicapi
+      searchYouTubeMusic(msg.query).then(results => {
         ws.send(JSON.stringify({
           type: 'music-results',
           data: results
@@ -190,42 +191,50 @@ function handleClientMessage(msg, ws) {
   }
 }
 
-// YouTube search
-async function searchYouTube(query) {
-  if (!YOUTUBE_API_KEY) {
-    // Return demo results if no API key
-    return [
-      { title: `${query} - YouTube Search`, videoId: 'dQw4w9WgXcQ', thumbnail: '' }
-    ];
-  }
-  
-  try {
-    const url = `https://www.googleapis.com/youtube/v3/search`;
-    const params = {
-      part: 'snippet',
-      q: query,
-      type: 'video',
-      maxResults: 10,
-      key: YOUTUBE_API_KEY
-    };
+// YouTube Music search using ytmusicapi (Python)
+async function searchYouTubeMusic(query) {
+  return new Promise((resolve) => {
+    console.log(`[Music] Searching: "${query}"`);
     
-    const response = await fetch(`${url}?${new URLSearchParams(params)}`);
-    const data = await response.json();
+    const python = spawn('python3', [MUSIC_SERVICE_PATH, 'search', query]);
     
-    if (data.items) {
-      return data.items.map(item => ({
-        title: item.snippet.title,
-        videoId: item.id.videoId,
-        thumbnail: item.snippet.thumbnails?.default?.url || '',
-        channel: item.snippet.channelTitle
-      }));
-    }
+    let output = '';
+    let error = '';
     
-    return [];
-  } catch (error) {
-    console.error('YouTube search error:', error);
-    return [];
-  }
+    python.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    python.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    python.on('close', (code) => {
+      if (code !== 0) {
+        console.error('[Music] Search error:', error);
+        resolve([
+          { title: `${query} (ytmusicapi not configured)`, videoId: '', thumbnail: '', artist: 'Configure ytmusicapi' }
+        ]);
+        return;
+      }
+      
+      try {
+        const results = JSON.parse(output);
+        if (results.error) {
+          console.error('[Music] API error:', results.error);
+          resolve([
+            { title: `${query}`, videoId: '', thumbnail: '', artist: results.hint || 'Setup required' }
+          ]);
+        } else {
+          console.log(`[Music] Found ${results.count} songs`);
+          resolve(results.songs || []);
+        }
+      } catch (e) {
+        console.error('[Music] Parse error:', e.message);
+        resolve([]);
+      }
+    });
+  });
 }
 
 // REST API endpoints
@@ -243,15 +252,38 @@ app.get('/api/music/search', async (req, res) => {
     return res.status(400).json({ error: 'Query required' });
   }
   
-  const results = await searchYouTube(q);
+  const results = await searchYouTubeMusic(q);
   res.json({ results });
+});
+
+app.get('/api/music/test', (req, res) => {
+  // Test ytmusicapi connection
+  const python = spawn('python3', [MUSIC_SERVICE_PATH, 'test']);
+  
+  let output = '';
+  python.stdout.on('data', (data) => {
+    output += data.toString();
+  });
+  
+  python.on('close', (code) => {
+    res.json({
+      connected: code === 0,
+      message: output.trim()
+    });
+  });
 });
 
 // Start server
 server.listen(PORT, async () => {
   console.log(`🎉 Family Chat Server running on http://localhost:${PORT}`);
   console.log(`📱 Mobile-friendly WebChat interface`);
-  console.log(`🎵 Music search enabled (configure YOUTUBE_API_KEY)`);
+  console.log(`🎵 Music search: ytmusicapi (Python)`);
+  
+  // Test music service
+  const python = spawn('python3', [MUSIC_SERVICE_PATH, 'test']);
+  python.stdout.on('data', (data) => {
+    console.log(`[Music] ${data.toString().trim()}`);
+  });
   
   try {
     await connectGateway();

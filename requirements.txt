@@ -1,0 +1,4 @@
+# Python dependencies for ytmusicapi
+# Install with: pip install -r requirements.txt
+
+ytmusicapi>=1.0.0
