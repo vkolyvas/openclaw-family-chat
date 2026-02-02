@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Chat 🤖</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1>🤖 Family Chat</h1>
+        <span class="status-indicator" id="connectionStatus">Connecting...</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="musicToggle" title="Music Player">🎵</button>
+        <button class="icon-btn" id="settingsToggle" title="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Main Chat Area -->
+    <main class="chat-container">
+      <div class="messages" id="messages">
+        <div class="message bot-message">
+          <div class="message-avatar">🤖</div>
+          <div class="message-content">
+            <div class="message-name">Syn</div>
+            <div class="message-text">👋 Hello family! I'm Syn, your AI assistant. How can I help you today?</div>
+            <div class="message-time">Just now</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Music Player Panel (collapsible) -->
+    <div class="music-panel" id="musicPanel">
+      <div class="music-header">
+        <h2>🎵 Music Search</h2>
+        <button class="close-btn" id="closeMusic">&times;</button>
+      </div>
+      <div class="music-search">
+        <input type="text" id="musicSearch" placeholder="Search for music..." autocomplete="off">
+        <button id="musicSearchBtn">🔍</button>
+      </div>
+      <div class="music-results" id="musicResults">
+        <div class="music-placeholder">
+          <p>🎶 Search for your favorite songs!</p>
+          <p class="hint">Try: "Jazz", "Relaxing music", "Metal"</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel (collapsible) -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-header">
+        <h2>⚙️ Settings</h2>
+        <button class="close-btn" id="closeSettings">&times;</button>
+      </div>
+      <div class="settings-content">
+        <div class="setting-item">
+          <label>Your Name</label>
+          <input type="text" id="userName" placeholder="Enter your name">
+        </div>
+        <div class="setting-item">
+          <label>Quick Actions</label>
+          <div class="quick-actions">
+            <button class="quick-btn" data-action="play-music">🎵 Play Music</button>
+            <button class="quick-btn" data-action="weather">🌤️ Weather</button>
+            <button class="quick-btn" data-action="reminder">⏰ Reminder</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <footer class="input-area">
+      <div class="input-container">
+        <button class="attach-btn" id="attachBtn" title="Attach">📎</button>
+        <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off">
+        <button class="send-btn" id="sendBtn">➤</button>
+      </div>
+      <div class="quick-replies">
+        <button class="quick-reply" data-message="Play some music">🎵 Music</button>
+        <button class="quick-reply" data-message="Tell me a joke">😂 Joke</button>
+        <button class="quick-reply" data-message="What's the weather?">🌤️ Weather</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
