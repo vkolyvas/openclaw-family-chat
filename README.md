@@ -2,6 +2,8 @@
 
 A family-friendly WebChat interface for OpenClaw with integrated music search!
 
+**Port**: 3010 (see [PORTS.md](https://github.com/vkolyvas/openclaw-family-chat/blob/main/PORTS.md) for all used ports)
+
 ## Features
 
 - 📱 **Mobile-friendly** - Works great on phones and tablets
@@ -32,7 +34,7 @@ GATEWAY_TOKEN=your-token-here
 YOUTUBE_API_KEY=your-youtube-api-key
 
 # Server port
-PORT=3000
+PORT=3010
 ```
 
 ### 3. Get YouTube API Key (for music search)
@@ -56,7 +58,7 @@ npm start
 ### 5. Open in Browser
 
 ```
-http://localhost:3000
+http://localhost:3010
 ```
 
 ## Usage
@@ -87,7 +89,7 @@ User's Browser
      ▼ (WebSocket)
 ┌─────────────────┐
 │  Family Chat    │◄── Express + WebSocket Server
-│  Server :3000   │
+│  Server :3010   │
 └────────┬────────┘
          │
          │ WebSocket (optional)
