@@ -6,11 +6,11 @@ A family-friendly WebChat interface for OpenClaw with integrated music search!
 
 ## Features
 
-- 📱 **Mobile-friendly** - Works great on phones and tablets
-- 🎵 **Music Search** - YouTube Music integration via ytmusicapi
+-  **Mobile-friendly** - Works great on phones and tablets
+-  **Music Search** - YouTube Music integration via ytmusicapi
 - 👨‍👩‍👧‍👦 **Multi-user** - Family members can all chat
-- 🤖 **AI Powered** - Powered by OpenClaw with your configured agents
-- 🎨 **Customizable** - Easy to theme and extend
+-  **AI Powered** - Powered by OpenClaw with your configured agents
+-  **Customizable** - Easy to theme and extend
 
 ## Quick Start
 
@@ -92,7 +92,7 @@ http://localhost:3010
 
 ### Music Search
 
-1. Click 🎵 in the header
+1. Click  in the header
 2. Search for songs/artists
 3. Click a result to open in YouTube Music
 
